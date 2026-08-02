@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 32px;
+      color: #f8fafc;
+    }
+
+    p {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #cbd5e1;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 12px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .result {
+      margin-top: 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .box {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 18px;
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #fca5a5;
+      text-align: center;
+      min-height: 24px;
+    }
+
+    .live {
+      margin-top: 10px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Age Calculator</h1>
+    <p>Enter your birth date and get your age in years, months, days, and hours.</p>
+
+    <div class="input-group">
+      <input type="date" id="birthDate" />
+      <button onclick="calculateAge()">Calculate</button>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <div class="result" id="result" style="display:none;">
+      <div class="box" id="yearsBox"></div>
+      <div class="box" id="monthsBox"></div>
+      <div class="box" id="daysBox"></div>
+      <div class="box" id="hoursBox"></div>
+    </div>
+
+    <div class="live" id="liveDate"></div>
+  </div>
+
+  <script>
+    function calculateAge() {
+      const birthInput = document.getElementById('birthDate').value;
+      const errorBox = document.getElementById('error');
+      const resultBox = document.getElementById('result');
+
+      errorBox.textContent = '';
+
+      if (!birthInput) {
+        errorBox.textContent = 'Please select your birth date.';
+        resultBox.style.display = 'none';
+        return;
+      }
+
+      const birthDate = new Date(birthInput);
+      const now = new Date();
+
+      if (birthDate > now) {
+        errorBox.textContent = 'Birth date cannot be in the future.';
+        resultBox.style.display = 'none';
+        return;
+      }
+
+      let years = now.getFullYear() - birthDate.getFullYear();
+      let months = now.getMonth() - birthDate.getMonth();
+      let days = now.getDate() - birthDate.getDate();
+
+      if (days < 0) {
+        months -= 1;
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+
+      const diffMs = now - birthDate;
+      const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+      document.getElementById('yearsBox').textContent = 'Age in years: ' + years;
+      document.getElementById('monthsBox').textContent = 'Age in months: ' + (years * 12 + months);
+      document.getElementById('daysBox').textContent = 'Age in days: ' + totalDays;
+      document.getElementById('hoursBox').textContent = 'Age in hours: ' + totalHours;
+
+      resultBox.style.display = 'grid';
+    }
+
+    function updateLiveDate() {
+      const now = new Date();
+      document.getElementById('liveDate').textContent = 'Today is: ' + now.toDateString();
+    }
+
+    updateLiveDate();
+    setInterval(updateLiveDate, 1000);
+  </script>
+</body>
+</html>

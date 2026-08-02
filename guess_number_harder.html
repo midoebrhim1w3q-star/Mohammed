@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guess the Number</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #111827, #0f766e); color: #fff; padding: 20px;
+    }
+    .game-box {
+      width: 100%; max-width: 520px; background: rgba(15, 23, 42, 0.96);
+      border-radius: 24px; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.1); text-align: center;
+    }
+    h1 { margin-bottom: 10px; font-size: 32px; }
+    p { color: #cbd5e1; margin-bottom: 16px; line-height: 1.6; }
+    select, input {
+      width: 100%; padding: 14px 16px; border: none; border-radius: 12px;
+      font-size: 18px; outline: none; margin-bottom: 12px;
+    }
+    button {
+      width: 100%; padding: 14px 16px; border: none; border-radius: 12px;
+      font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 10px;
+      transition: 0.2s;
+    }
+    button:hover { transform: scale(1.02); }
+    .guess-btn { background: #38bdf8; color: #0f172a; }
+    .reset-btn { background: #22c55e; color: white; }
+    .message { margin-top: 18px; font-size: 20px; font-weight: bold; min-height: 30px; }
+    .stats, .range, .best { margin-top: 10px; color: #e2e8f0; font-size: 16px; }
+    .hint { margin-top: 10px; color: #94a3b8; font-size: 14px; }
+    .success { color: #22c55e; }
+    .warn { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <div class="game-box">
+    <h1>Guess the Number</h1>
+    <p>Pick a difficulty, then try to find the secret number before you run out of tries.</p>
+    <select id="difficulty" onchange="resetGame()">
+      <option value="easy">Easy 1 to 10</option>
+      <option value="medium" selected>Medium 1 to 50</option>
+      <option value="hard">Hard 1 to 100</option>
+    </select>
+    <input type="number" id="guessInput" placeholder="Enter your guess" />
+    <button class="guess-btn" onclick="checkGuess()">Guess</button>
+    <button class="reset-btn" onclick="resetGame()">Restart Game</button>
+    <div class="message" id="message"></div>
+    <div class="stats" id="stats"></div>
+    <div class="range" id="range"></div>
+    <div class="best" id="best"></div>
+    <div class="hint">The game gets a little tougher depending on the difficulty.</div>
+  </div>
+
+  <script>
+    let secretNumber = 0;
+    let attempts = 0;
+    let maxAttempts = 0;
+    let minRange = 1;
+    let maxRange = 50;
+    let bestScore = null;
+
+    const messageBox = document.getElementById('message');
+    const statsBox = document.getElementById('stats');
+    const rangeBox = document.getElementById('range');
+    const bestBox = document.getElementById('best');
+    const guessInput = document.getElementById('guessInput');
+    const difficultySelect = document.getElementById('difficulty');
+
+    function setupDifficulty() {
+      const level = difficultySelect.value;
+      if (level === 'easy') { minRange = 1; maxRange = 10; maxAttempts = 5; }
+      else if (level === 'medium') { minRange = 1; maxRange = 50; maxAttempts = 7; }
+      else { minRange = 1; maxRange = 100; maxAttempts = 10; }
+      secretNumber = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+      rangeBox.textContent = 'Number range: ' + minRange + ' to ' + maxRange + ' | Max attempts: ' + maxAttempts;
+    }
+
+    function updateStats() {
+      statsBox.textContent = 'Attempts used: ' + attempts + ' / ' + maxAttempts;
+      bestBox.textContent = bestScore === null ? 'Best score: none yet' : 'Best score: ' + bestScore + ' attempts';
+    }
+
+    function endGame(win) {
+      guessInput.disabled = win;
+      if (win) {
+        messageBox.textContent = 'Correct! You found it in ' + attempts + ' attempts.';
+        messageBox.className = 'message success';
+        if (bestScore === null || attempts < bestScore) bestScore = attempts;
+        updateStats();
+      }
+    }
+
+    function checkGuess() {
+      const userGuess = parseInt(guessInput.value);
+      if (guessInput.disabled) return;
+      if (isNaN(userGuess) || userGuess < minRange || userGuess > maxRange) {
+        messageBox.textContent = 'Please enter a valid number between ' + minRange + ' and ' + maxRange + '.';
+        messageBox.className = 'message warn';
+        return;
+      }
+      attempts++;
+      updateStats();
+      if (userGuess === secretNumber) { endGame(true); return; }
+      if (attempts >= maxAttempts) {
+        messageBox.textContent = 'Game over! The number was ' + secretNumber + '.';
+        messageBox.className = 'message warn';
+        guessInput.disabled = true;
+        return;
+      }
+      const diff = Math.abs(userGuess - secretNumber);
+      if (userGuess < secretNumber) {
+        messageBox.textContent = diff <= 3 ? 'Very close, but too low.' : 'Too low! Try a bigger number.';
+      } else {
+        messageBox.textContent = diff <= 3 ? 'Very close, but too high.' : 'Too high! Try a smaller number.';
+      }
+      messageBox.className = 'message warn';
+    }
+
+    function resetGame() {
+      attempts = 0;
+      guessInput.disabled = false;
+      guessInput.value = '';
+      messageBox.textContent = '';
+      messageBox.className = 'message';
+      setupDifficulty();
+      updateStats();
+      guessInput.focus();
+    }
+
+    resetGame();
+  </script>
+</body>
+</html>
