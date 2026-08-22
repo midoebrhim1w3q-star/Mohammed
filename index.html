@@ -1,190 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Age Calculator</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<html lang="ar" dir="rtl" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>مرصد العمر | حاسبة العمر والبرج الفلكي</title>
+    <meta
+      name="description"
+      content="احسب عمرك بالسنوات والشهور والأيام والساعات والدقائق، واكتشف برجك الفلكي وصفاته وعدد الأيام المتبقية لعيد ميلادك."
+    />
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #e2e8f0;
-      padding: 20px;
-    }
+    <!-- خطوط عربية: Reem Kufi للعناوين و Cairo للنصوص -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Reem+Kufi:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-    .card {
-      width: 100%;
-      max-width: 520px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-    }
+  <body>
+    <!-- طبقة النجوم الزخرفية (تظهر في الوضع الداكن) -->
+    <div class="sky" aria-hidden="true"></div>
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 32px;
-      color: #f8fafc;
-    }
+    <div class="shell">
+      <!-- ==================== الترويسة ==================== -->
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand__mark" aria-hidden="true">
+            <!-- هلال ونجمة -->
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+                 stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z" />
+            </svg>
+          </span>
+          <div class="brand__text">
+            <strong>مرصد العمر</strong>
+            <small>حاسبة العمر والبرج الفلكي</small>
+          </div>
+        </div>
 
-    p {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #cbd5e1;
-    }
+        <button
+          id="themeToggle"
+          class="theme-btn"
+          type="button"
+          aria-pressed="true"
+          title="تبديل الوضع الفاتح والداكن"
+        >
+          <!-- أيقونة الشمس: تظهر في الوضع الداكن للتبديل إلى الفاتح -->
+          <svg class="theme-btn__icon theme-btn__icon--sun" aria-hidden="true"
+               viewBox="0 0 24 24" width="18" height="18" fill="none"
+               stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4" />
+          </svg>
+          <!-- أيقونة القمر: تظهر في الوضع الفاتح للتبديل إلى الداكن -->
+          <svg class="theme-btn__icon theme-btn__icon--moon" aria-hidden="true"
+               viewBox="0 0 24 24" width="18" height="18" fill="none"
+               stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z" />
+          </svg>
+          <span id="themeLabel" class="theme-btn__label">الوضع الفاتح</span>
+        </button>
+      </header>
 
-    .input-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
+      <main>
+        <!-- ==================== نموذج الإدخال ==================== -->
+        <section class="intro">
+          <h1 class="intro__title">اعرف عمرك بالدقيقة، واكتشف برجك</h1>
+          <p class="intro__sub">
+            أدخل اسمك وتاريخ ميلادك، وسنحسب لك عمرك بدقة كاملة مع مراعاة السنوات
+            الكبيسة، ونكشف لك برجك الفلكي وموعد عيد ميلادك القادم.
+          </p>
+        </section>
 
-    input {
-      flex: 1;
-      min-width: 220px;
-      padding: 14px 16px;
-      border: none;
-      border-radius: 12px;
-      outline: none;
-      font-size: 16px;
-    }
+        <section class="panel" aria-labelledby="formTitle">
+          <h2 id="formTitle" class="sr-only">نموذج إدخال البيانات</h2>
 
-    button {
-      padding: 14px 20px;
-      border: none;
-      border-radius: 12px;
-      background: #38bdf8;
-      color: #0f172a;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+          <form id="ageForm" class="form" novalidate>
+            <div class="field">
+              <label for="userName">الاسم</label>
+              <input
+                type="text"
+                id="userName"
+                name="userName"
+                placeholder="مثال: سارة"
+                autocomplete="name"
+                maxlength="40"
+              />
+            </div>
 
-    button:hover {
-      background: #0ea5e9;
-    }
+            <div class="field">
+              <label for="birthDate">تاريخ الميلاد</label>
+              <input type="date" id="birthDate" name="birthDate" required />
+            </div>
 
-    .result {
-      margin-top: 20px;
-      display: grid;
-      gap: 12px;
-    }
+            <div class="form__actions">
+              <button type="submit" class="btn btn--primary">احسب الآن</button>
+              <button type="button" id="resetBtn" class="btn btn--ghost">
+                إعادة الحساب
+              </button>
+            </div>
+          </form>
 
-    .box {
-      background: #1e293b;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 18px;
-    }
+          <p id="errorMsg" class="error" role="alert" hidden></p>
+        </section>
 
-    .error {
-      margin-top: 15px;
-      color: #fca5a5;
-      text-align: center;
-      min-height: 24px;
-    }
+        <!-- ==================== النتائج ==================== -->
+        <section id="results" class="results" aria-live="polite" hidden>
+          <!-- بطاقة البرج الرئيسية -->
+          <article class="card card--hero reveal">
+            <div class="hero__sign">
+              <span id="zodiacGlyph" class="hero__glyph" aria-hidden="true">♌</span>
+              <span id="zodiacRange" class="hero__range">—</span>
+            </div>
 
-    .live {
-      margin-top: 10px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 14px;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Age Calculator</h1>
-    <p>Enter your birth date and get your age in years, months, days, and hours.</p>
+            <div class="hero__body">
+              <p class="hero__hello">
+                مرحبًا <span id="displayName" class="hero__name">صديقنا</span>
+              </p>
+              <h3 class="hero__zodiac">
+                برجك: <span id="zodiacName">—</span>
+              </h3>
+              <p id="zodiacTraits" class="hero__traits">—</p>
 
-    <div class="input-group">
-      <input type="date" id="birthDate" />
-      <button onclick="calculateAge()">Calculate</button>
+              <p class="hero__exact">
+                عمرك الآن
+                <b id="exactAge">—</b>
+              </p>
+            </div>
+          </article>
+
+          <!-- بطاقات الإحصاءات -->
+          <article class="card stat reveal">
+            <span class="stat__label">السنوات</span>
+            <span id="statYears" class="stat__value">0</span>
+            <span class="stat__hint">سنة كاملة</span>
+          </article>
+
+          <article class="card stat reveal">
+            <span class="stat__label">الشهور</span>
+            <span id="statMonths" class="stat__value">0</span>
+            <span class="stat__hint">شهر عشته</span>
+          </article>
+
+          <article class="card stat reveal">
+            <span class="stat__label">الأسابيع</span>
+            <span id="statWeeks" class="stat__value">0</span>
+            <span class="stat__hint">أسبوع</span>
+          </article>
+
+          <article class="card stat reveal">
+            <span class="stat__label">الأيام</span>
+            <span id="statDays" class="stat__value">0</span>
+            <span class="stat__hint">يوم</span>
+          </article>
+
+          <article class="card stat stat--live reveal">
+            <span class="stat__label">الساعات</span>
+            <span id="statHours" class="stat__value">0</span>
+            <span class="stat__hint">تُحدَّث لحظيًا</span>
+          </article>
+
+          <article class="card stat stat--live reveal">
+            <span class="stat__label">الدقائق</span>
+            <span id="statMinutes" class="stat__value">0</span>
+            <span class="stat__hint">تُحدَّث لحظيًا</span>
+          </article>
+
+          <!-- بطاقة عيد الميلاد القادم -->
+          <article class="card card--birthday reveal">
+            <span class="stat__label">عيد الميلاد القادم</span>
+            <div class="bday">
+              <div class="bday__count">
+                <span id="daysToBirthday" class="bday__num">0</span>
+                <span id="bdayUnit" class="bday__unit">يوم متبقٍ</span>
+              </div>
+              <div class="bday__meta">
+                <p id="nextBirthdayDate">—</p>
+                <p id="nextBirthdayDay" class="muted">—</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- أزرار الإجراءات -->
+          <div class="results__actions reveal">
+            <button type="button" id="shareBtn" class="btn btn--primary">
+              مشاركة النتيجة
+            </button>
+            <button type="button" id="againBtn" class="btn btn--ghost">
+              حساب تاريخ آخر
+            </button>
+            <span id="shareNote" class="share-note" role="status"></span>
+          </div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <p>
+          جميع الحسابات تجري داخل متصفحك فقط، ولا يُرسل أي بيانات إلى أي جهة.
+        </p>
+      </footer>
     </div>
 
-    <div id="error" class="error"></div>
-
-    <div class="result" id="result" style="display:none;">
-      <div class="box" id="yearsBox"></div>
-      <div class="box" id="monthsBox"></div>
-      <div class="box" id="daysBox"></div>
-      <div class="box" id="hoursBox"></div>
-    </div>
-
-    <div class="live" id="liveDate"></div>
-  </div>
-
-  <script>
-    function calculateAge() {
-      const birthInput = document.getElementById('birthDate').value;
-      const errorBox = document.getElementById('error');
-      const resultBox = document.getElementById('result');
-
-      errorBox.textContent = '';
-
-      if (!birthInput) {
-        errorBox.textContent = 'Please select your birth date.';
-        resultBox.style.display = 'none';
-        return;
-      }
-
-      const birthDate = new Date(birthInput);
-      const now = new Date();
-
-      if (birthDate > now) {
-        errorBox.textContent = 'Birth date cannot be in the future.';
-        resultBox.style.display = 'none';
-        return;
-      }
-
-      let years = now.getFullYear() - birthDate.getFullYear();
-      let months = now.getMonth() - birthDate.getMonth();
-      let days = now.getDate() - birthDate.getDate();
-
-      if (days < 0) {
-        months -= 1;
-        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        days += prevMonth.getDate();
-      }
-
-      if (months < 0) {
-        years -= 1;
-        months += 12;
-      }
-
-      const diffMs = now - birthDate;
-      const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-      document.getElementById('yearsBox').textContent = 'Age in years: ' + years;
-      document.getElementById('monthsBox').textContent = 'Age in months: ' + (years * 12 + months);
-      document.getElementById('daysBox').textContent = 'Age in days: ' + totalDays;
-      document.getElementById('hoursBox').textContent = 'Age in hours: ' + totalHours;
-
-      resultBox.style.display = 'grid';
-    }
-
-    function updateLiveDate() {
-      const now = new Date();
-      document.getElementById('liveDate').textContent = 'Today is: ' + now.toDateString();
-    }
-
-    updateLiveDate();
-    setInterval(updateLiveDate, 1000);
-  </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
